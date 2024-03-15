@@ -55,3 +55,9 @@ async def get_current_user_from_cookie(request: Request) -> user:
     if token:
         user = await verify_token(token)
         return user
+
+
+async def get_admin_status_from_cookie(request: Request) -> bool:
+    user = await get_current_user_from_cookie(request)
+    if user and user.is_superuser:
+        return True

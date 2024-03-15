@@ -1,14 +1,13 @@
-from typing import Annotated
 from pydantic import EmailStr
 from repository.user import UserRepository
-from security.secr import verify_password, create_access_token, get_password_hash, verify_token
+from security.secr import verify_password, create_access_token, get_password_hash
 from auth.models import user
 from database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Form, HTTPException
-from fastapi.responses import RedirectResponse, Response
+from fastapi.responses import RedirectResponse
 from security.secr import COOKIE_NAME, ACCESS_TOKEN_EXPIRE_MINUTES
-from sqlalchemy import select, insert, delete
+from sqlalchemy import insert
 
 
 router = APIRouter(

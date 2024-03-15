@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 from auth.models import role
 from auth.routers import router as router_auth
+from command.routers import router as router_command
 
 app = FastAPI(
     title="Новосибирский ТЮБ",
@@ -47,8 +48,9 @@ app.add_middleware(
 )
 
 app.include_router(router_auth)
+app.include_router(router_command)
 
 
-@app.get("", tags=['Main'])
+@app.get("/", tags=['Main'])
 async def root():
     return {"message": "Start complete"}
