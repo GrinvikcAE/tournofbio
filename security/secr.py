@@ -19,8 +19,10 @@ COOKIE_NAME = COOKIE_NAME
 async def create_access_token(user):
     try:
         payload = {
-            "email": user.email,
+            'email': user.email,
             'hashed_password': user.hashed_password,
+            'role_id': user.role_id,
+            'is_superuser': user.is_superuser,
         }
         return jwt.encode(payload, key=JWT_SECRET, algorithm=ALGORITHM)
     except HTTPException as e:
@@ -59,5 +61,6 @@ async def get_current_user_from_cookie(request: Request) -> user:
 
 async def get_admin_status_from_cookie(request: Request) -> bool:
     user = await get_current_user_from_cookie(request)
-    if user and user.is_superuser:
+    if user and user.get('is_superuser'):
         return True
+    return False

@@ -38,15 +38,20 @@ async def get_commands(offset: int = 0, limit: int = 100,
 
 
 @router.post('/del_command/{command_id}', dependencies=[Depends(get_admin_status_from_cookie)])
-async def del_command_by_id(command_id: int, session: AsyncSession = Depends(get_async_session)):
-    try:
-        query = delete(command).where(command.c.id == command_id)
-        await session.execute(query)
-        await session.commit()
-        return 'Delete command successful'
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=401, detail='Credentials not correct')
+async def del_command_by_id(command_id: int,
+                            session: AsyncSession = Depends(get_async_session),
+                            user_status: bool = Depends(get_admin_status_from_cookie)):
+    if user_status:
+        try:
+            query = delete(command).where(command.c.id == command_id)
+            await session.execute(query)
+            await session.commit()
+            return 'Delete command successful'
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=401, detail='Credentials not correct')
+    else:
+        raise HTTPException(status_code=401, detail='Unauthorized as superuser')
 
 
 @router.get('/{command_name}')
