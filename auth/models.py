@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, ForeignKey, JSON, Boolean
+from sqlalchemy.orm import declarative_base
 
 
 metadata = MetaData()
@@ -26,3 +27,12 @@ user = Table(
 )
 
 
+Base = declarative_base()
+
+
+class Role(Base):
+    __table__ = role
+
+
+class User(Base):
+    __table__ = user

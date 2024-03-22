@@ -23,4 +23,4 @@ class UserRepository:
     async def get_user_by_email(self, email: str):
         query = select(user).where(user.c.email == email)
         result = await self.session.execute(query)
-        return result.mappings().one()
+        return result.mappings().one_or_none()

@@ -1,6 +1,8 @@
 from datetime import datetime
 from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, ForeignKey
 from auth.models import role
+from sqlalchemy.orm import declarative_base
+
 
 metadata = MetaData()
 
@@ -22,3 +24,14 @@ member = Table(
     Column('surname', String(64), nullable=True, unique=False),
     Column('command_id', Integer, ForeignKey(command.c.id, ondelete='CASCADE'), nullable=False)
 )
+
+
+Base = declarative_base()
+
+
+class Command(Base):
+    __table__ = command
+
+
+class Member(Base):
+    __table__ = member

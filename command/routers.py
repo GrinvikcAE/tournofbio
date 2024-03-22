@@ -91,3 +91,10 @@ async def add_member(command_name: str,
     except Exception as e:
         print(e)
         raise HTTPException(status_code=401, detail='Credentials not correct')
+
+
+@router.post('/{command_name}/change_name', dependencies=[Depends(get_current_user_from_cookie)])
+async def change_name(command_name: str,
+                      new_name:str = Form(max_length=64),
+                      session: AsyncSession = Depends(get_async_session)):
+    pass

@@ -22,8 +22,7 @@ async def login(email: EmailStr = Form(max_length=128),
                 session: AsyncSession = Depends(get_async_session)):
     user_repository = UserRepository(session)
     db_user = await user_repository.get_user_by_email(email)
-
-    if not db_user:
+    if db_user is None:
         return "email or password is not valid"
     if await verify_password(password, db_user['hashed_password']):
         token = await create_access_token(db_user)
@@ -58,26 +57,4 @@ async def signup(email: EmailStr = Form(max_length=128),
         raise HTTPException(status_code=401, detail='Credentials not correct')
 
 
-@router.post('/update_value_to_user', dependencies=[Depends(get_admin_status_from_cookie)])
-async def update_value(email: EmailStr = Form(max_length=128),
-                       field: str = Form(max_length=128),
-                       value: int | str | bool = Form(max_length=128),
-                       user_status: bool = Depends(get_admin_status_from_cookie),
-                       session: AsyncSession = Depends(get_async_session)):
-    if user_status:
-        if 'id' in field:
-            value = int(value)
-            result = {f'{field}': value}
-        elif field == 'is_superuser':
-            value = True if value.lower() == 'true' else False
-            role_id = 1 if value else 6
-            result = {f'{field}': value,
-                      'role_id': role_id}
-        else:
-            result = {f'{field}': value}
-        stmt = update(user).where(user.c.email == email).values(**result)
-        await session.execute(stmt)
-        await session.commit()
-        return 'User updated successfully'
-    else:
-        raise HTTPException(status_code=401, detail='Unauthorized as superuser')
+
