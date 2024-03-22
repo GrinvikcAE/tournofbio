@@ -70,4 +70,4 @@ app.include_router(router_admin)
 
 @app.get("/", tags=['Main'])
 async def root():
-    return {"message": "Start complete"}
+    return {"message": "Test start complete"}
