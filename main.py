@@ -1,10 +1,10 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from sqladmin import Admin
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine, get_async_session, async_session_maker
+from database import engine, async_session_maker
 
 
-from auth.models import role
+from auth.models import role, user
 from auth.routers import router as router_auth
 from command.routers import router as router_command
 from admin.routers import router as router_admin
@@ -12,7 +12,8 @@ from admin.routers import router as router_admin
 from admin.views import RoleAdmin, UserAdmin, CommandAdmin, MemberAdmin
 from admin.admin import AdminAuth
 
-from config import JWT_SECRET
+from config import JWT_SECRET, ADMIN, PASWD
+from security.secr import get_password_hash
 
 app = FastAPI(
     title="Новосибирский ТЮБ",
@@ -23,7 +24,7 @@ admin = Admin(app=app, engine=async_session_maker, authentication_backend=auth_b
 
 
 @app.on_event("startup")
-async def add_role_to_db():
+async def add_on_startup():
     try:
         admin.add_view(RoleAdmin)
         admin.add_view(UserAdmin)
@@ -38,6 +39,17 @@ async def add_role_to_db():
                      {'id': 6, 'name': 'nobody', 'permissions': []}]
             try:
                 await conn.execute(role.insert(), roles)
+            except Exception as e:
+                print(e)
+        await engine.dispose()
+    except Exception as e:
+        print(e)
+    try:
+        async with engine.begin() as conn:
+            users = [{'email': ADMIN, 'hashed_password': await get_password_hash(PASWD),
+                      'is_superuser': True, 'role_id': 1}]
+            try:
+                await conn.execute(user.insert(), users)
             except Exception as e:
                 print(e)
         await engine.dispose()

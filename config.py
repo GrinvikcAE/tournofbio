@@ -14,3 +14,6 @@ JWT_SECRET = os.getenv("JWT_SECRET")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 COOKIE_NAME = os.getenv("COOKIE_NAME")
+
+ADMIN = os.getenv("ADMIN")
+PASWD = os.getenv("PASWD")
