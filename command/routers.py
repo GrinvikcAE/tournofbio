@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from security.secr import COOKIE_NAME, ACCESS_TOKEN_EXPIRE_MINUTES
 from security.secr import get_admin_status_from_cookie, get_current_user_from_cookie
-from sqlalchemy import insert, select, delete
+from sqlalchemy import insert, select, delete, update
 from command.models import command, member
 
 router = APIRouter(
@@ -37,13 +37,13 @@ async def get_commands(offset: int = 0, limit: int = 100,
     return result.mappings().all()
 
 
-@router.post('/del_command/{command_id}', dependencies=[Depends(get_admin_status_from_cookie)])
-async def del_command_by_id(command_id: int,
-                            session: AsyncSession = Depends(get_async_session),
-                            user_status: bool = Depends(get_admin_status_from_cookie)):
+@router.post('/{command_name}/del_command/', dependencies=[Depends(get_admin_status_from_cookie)])
+async def del_command_by_name(command_name: str,
+                              session: AsyncSession = Depends(get_async_session),
+                              user_status: bool = Depends(get_admin_status_from_cookie)):
     if user_status:
         try:
-            query = delete(command).where(command.c.id == command_id)
+            query = delete(command).where(command.c.name == command_name)
             await session.execute(query)
             await session.commit()
             return 'Delete command successful'
@@ -95,6 +95,12 @@ async def add_member(command_name: str,
 
 @router.post('/{command_name}/change_name', dependencies=[Depends(get_current_user_from_cookie)])
 async def change_name(command_name: str,
-                      new_name:str = Form(max_length=64),
+                      new_name: str = Form(max_length=64),
                       session: AsyncSession = Depends(get_async_session)):
-    pass
+    try:
+        stmt = update(command).where(command.name == command_name).values(name=new_name)
+        await session.execute(stmt)
+        await session.commit()
+        return 'Command name updated successfully'
+    except:
+        raise HTTPException(status_code=401, detail='Credentials not correct')
