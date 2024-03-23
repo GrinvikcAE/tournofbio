@@ -8,7 +8,7 @@ from task.models import task
 
 router = APIRouter(
     prefix="/task",
-    tags=["task"]
+    tags=["Task"]
 )
 
 

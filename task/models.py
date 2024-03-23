@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData, Table, Column, Integer, String
+from sqlalchemy import MetaData, Table, Column, Integer, String, Text
 
 
 metadata = MetaData()
@@ -9,5 +9,5 @@ task = Table(
     Column('id', Integer, primary_key=True, index=True),
     Column('number', Integer),
     Column('name', String(128), unique=False),
-    Column('description', String())
+    Column('description', Text())
 )

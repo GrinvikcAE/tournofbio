@@ -3,11 +3,12 @@ from sqladmin import Admin
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, async_session_maker
 
-
 from auth.models import role, user
 from auth.routers import router as router_auth
 from command.routers import router as router_command
 from task.routers import router as router_task
+from rating.routers import router as router_rating
+
 from admin.routers import router as router_admin
 
 from admin.views import RoleAdmin, UserAdmin, CommandAdmin, MemberAdmin
@@ -79,7 +80,7 @@ app.add_middleware(
 app.include_router(router_auth)
 app.include_router(router_command)
 app.include_router(router_task)
-
+app.include_router(router_rating)
 
 app.include_router(router_admin)
 

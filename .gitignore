@@ -1,2 +1,4 @@
 .venv
 .idea
+/migration/versions
+.env-dev
