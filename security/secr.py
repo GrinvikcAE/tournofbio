@@ -19,8 +19,10 @@ COOKIE_NAME = COOKIE_NAME
 async def create_access_token(user):
     try:
         payload = {
+            'id': user.id,
             'email': user.email,
             'hashed_password': user.hashed_password,
+            'commands_name': user.commands_name,
             'role_id': user.role_id,
             'is_superuser': user.is_superuser,
         }

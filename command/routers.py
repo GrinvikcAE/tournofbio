@@ -13,22 +13,6 @@ router = APIRouter(
 )
 
 
-@router.post('/add_command', dependencies=[Depends(get_current_user_from_cookie)])
-async def add_command(name: str = Form(max_length=128),
-                      session: AsyncSession = Depends(get_async_session)):
-    result = {'name': name,
-              'role_id': 5}
-
-    try:
-        stmt = insert(command).values(**result)
-        await session.execute(stmt)
-        await session.commit()
-        return 'Command added'
-    except Exception as e:
-        print(e)
-        raise e
-
-
 @router.get('/get_commands')
 async def get_commands(offset: int = 0, limit: int = 100,
                        session: AsyncSession = Depends(get_async_session)):
@@ -104,3 +88,10 @@ async def change_name(command_name: str,
         return 'Command name updated successfully'
     except:
         raise HTTPException(status_code=401, detail='Credentials not correct')
+
+
+@router.get('/{command_name}/members')
+async def get_members(command_name: str, session: AsyncSession = Depends(get_async_session)):
+    stmt = select(member).where(member.c.command_name == command_name)
+    result = await session.execute(stmt)
+    return result.mappings().all()

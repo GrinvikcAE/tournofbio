@@ -21,12 +21,12 @@ async def login(email: EmailStr = Form(max_length=128),
                 password: str = Form(max_length=128, min_length=6),
                 session: AsyncSession = Depends(get_async_session)):
     user_repository = UserRepository(session)
-    db_user = await user_repository.get_user_by_email(email)
+    db_user = await user_repository.get_user_by_field('email', email)
     if db_user is None:
         return "email or password is not valid"
     if await verify_password(password, db_user['hashed_password']):
         token = await create_access_token(db_user)
-        response = RedirectResponse(url='')
+        response = RedirectResponse(url=f"/{db_user['id']}")
         response.set_cookie(key=COOKIE_NAME, value=token, httponly=True, expires=ACCESS_TOKEN_EXPIRE_MINUTES)
         return response
     else:

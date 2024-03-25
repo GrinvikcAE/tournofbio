@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, ForeignKey, JSON, Boolean
 from sqlalchemy.orm import declarative_base
+from command.models import command
 
 
 metadata = MetaData()
@@ -22,7 +23,9 @@ user = Table(
     Column('surname', String(64), nullable=True, unique=False),
     Column('email', String(320), nullable=False, unique=True),
     Column('hashed_password', String(1024), nullable=False),
-    Column('role_id', Integer, ForeignKey(role.c.id, ondelete='CASCADE'), default=6),
+    Column('commands_name', JSON),
+    Column('role_id', Integer, ForeignKey('role.id', ondelete='CASCADE'), default=6),
+    Column('ready_time', JSON),
     Column('is_superuser', Boolean, default=False, nullable=False),
 )
 

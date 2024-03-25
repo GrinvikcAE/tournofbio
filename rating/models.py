@@ -7,7 +7,7 @@ command_rating = Table(
     'command_rating',
     metadata,
     Column('id', Integer, primary_key=True, index=True),
-    Column('command_name', String, ForeignKey(command.c.name)),
+    Column('command_name', String(128), ForeignKey(command.c.name)),
     Column('place', Integer),
     Column('rating', Integer, default=0),
     Column('mark', Float, default=0),

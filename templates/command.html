@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+    {{ command_name }}
+    {% for member in members %}
+        <tr>
+            <th> {{ member }}</th>
+        </tr>
+    {% endfor %}
+{% endblock %}

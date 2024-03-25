@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+<div class="container-login">
+    <form method="post" action="/auth/login">
+        <p>
+            Почта:<br>
+            <label>
+                <input name="email" type="email" title="Обязательное поле для заполнения" required>
+            </label>
+        </p>
+        <p>
+            Пароль:<br>
+            <label>
+                <input name="password" type="password" title="Обязательное поле для заполнения" required>
+            </label>
+        </p>
+        <button type="submit">Войти</button>
+    </form>
+</div>
+{% endblock %}
