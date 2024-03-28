@@ -1,14 +1,63 @@
 {% extends "base.html" %}
 
 {% block head %}
+
+<script>
+    function delete_member_by_id(command_name, member_id) {
+        fetch("/command/" + command_name + "/delete_member/" + member_id, {method: "POST"})
+        setTimeout(function () {
+            window.location.reload()
+        }, 500)
+        return false;
+    }
+</script>
+
 {% endblock %}
 
 
 {% block content %}
     {{ command_name }}
-    {% for member in members %}
-        <tr>
-            <th> {{ member }}</th>
-        </tr>
-    {% endfor %}
+    <div>
+        <table>
+            {% for member in members %}
+                    <tr>
+                        <td hidden="hidden"> id: {{ member.id }}</td>
+                        <td hidden="hidden"> command_name: {{ member.command_name }}</td>
+                        <td> ФИО: {{ member.lastname }}</td>
+                        <td> {{ member.name }}</td>
+                        <td> {{ member.surname }}</td>
+                        <td> Задачи: {{ member.tasks }}</td>
+                        <td>
+                            <button type="submit"
+                                    data-name="{{command_name}}"
+                                    data-id="{{member.id}}"
+                                    onclick="delete_member_by_id(this.dataset.name, this.dataset.id)">Удалить</button>
+                        </td>
+                    </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="container-add-member">
+        <form method="post" action="/command/{{command_name}}/add_member">
+        <p>
+            Фамилия:<br>
+            <label>
+                <input name="lastname" type="text" title="Обязательное поле для заполнения" required>
+            </label>
+        </p>
+        <p>
+            Имя:<br>
+            <label>
+                <input name="name" type="text" title="Обязательное поле для заполнения" required>
+            </label>
+        </p>
+        <p>
+            Отчество:<br>
+            <label>
+                <input name="surname" type="text" title="Обязательное поле для заполнения" required>
+            </label>
+        </p>
+        <button type="submit">Добавить</button>
+    </form>
+    </div>
 {% endblock %}

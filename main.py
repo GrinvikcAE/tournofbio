@@ -87,6 +87,7 @@ app.add_middleware(
 app.include_router(router_auth)
 app.include_router(router_user)
 app.include_router(router_command)
+
 app.include_router(router_task)
 app.include_router(router_rating)
 

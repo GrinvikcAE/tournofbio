@@ -1,6 +1,6 @@
 from database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, Form, HTTPException
+from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from security.secr import COOKIE_NAME, ACCESS_TOKEN_EXPIRE_MINUTES
 from security.secr import get_admin_status_from_cookie, get_current_user_from_cookie
@@ -49,34 +49,6 @@ async def get_command_by_name(command_name: str, session: AsyncSession = Depends
         raise HTTPException(status_code=401, detail='Credentials not correct')
 
 
-@router.post('/{command_name}/add_member', dependencies=[Depends(get_current_user_from_cookie)])
-async def add_member(command_name: str,
-                     lastname: str = Form(max_length=64),
-                     name: str = Form(max_length=64),
-                     surname: str = Form(max_length=64),
-                     session: AsyncSession = Depends(get_async_session)):
-    try:
-        query = select(command).where(command.c.name == command_name)
-        result = await session.execute(query)
-        command_id = result.mappings().one_or_none()['id']
-        result = {'lastname': lastname,
-                  'name': name,
-                  'surname': surname,
-                  'command_id': command_id}
-        try:
-            stmt = insert(member).values(**result)
-            await session.execute(stmt)
-            await session.commit()
-            return 'Member added successfully'
-        except Exception as e:
-            print(e)
-            raise HTTPException(status_code=401, detail='Credentials not correct')
-
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=401, detail='Credentials not correct')
-
-
 @router.post('/{command_name}/change_name', dependencies=[Depends(get_current_user_from_cookie)])
 async def change_name(command_name: str,
                       new_name: str = Form(max_length=64),
@@ -90,8 +62,50 @@ async def change_name(command_name: str,
         raise HTTPException(status_code=401, detail='Credentials not correct')
 
 
+@router.post('/{command_name}/add_member', dependencies=[Depends(get_current_user_from_cookie)])
+async def add_member(command_name: str,
+                     lastname: str = Form(max_length=64),
+                     name: str = Form(max_length=64),
+                     surname: str = Form(max_length=64),
+                     current_user=Depends(get_current_user_from_cookie),
+                     session: AsyncSession = Depends(get_async_session)):
+    try:
+        result = {'lastname': lastname,
+                  'name': name,
+                  'surname': surname,
+                  'command_name': command_name}
+        try:
+            stmt = insert(member).values(**result)
+            await session.execute(stmt)
+            await session.commit()
+            usr = current_user['id']
+            return RedirectResponse(url=f'/{usr}/{command_name}')
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=401, detail='Credentials not correct')
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=401, detail='Credentials not correct')
+
+
 @router.get('/{command_name}/members')
 async def get_members(command_name: str, session: AsyncSession = Depends(get_async_session)):
     stmt = select(member).where(member.c.command_name == command_name)
     result = await session.execute(stmt)
     return result.mappings().all()
+
+
+@router.post('/{command_name}/delete_member/{member_id}')
+async def delete_member(command_name: str,
+                        member_id: int,
+                        current_user=Depends(get_current_user_from_cookie),
+                        session: AsyncSession = Depends(get_async_session)):
+    if command_name not in current_user['commands_name'][0]['commands']:
+        return HTTPException(status_code=401, detail='Credentials not correct')
+    else:
+        stmt = delete(member).where(member.c.id == member_id)
+        await session.execute(stmt)
+        await session.commit()
+        usr = current_user['id']
+        return RedirectResponse(url=f'/{usr}/{command_name}')
