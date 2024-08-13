@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Новосибирский ТЮБ</title>
+</head>
+
+
+<body>
+<div>
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <form>
+                        <button formmethod="get" formaction="/{{cookie_user.id}}">
+                            Расписание
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    {% if closest_aud == None %}
+                        <form>
+                            <button formmethod="get" formaction="/{{cookie_user.id}}">
+                                Боев нет
+                            </button>
+                        </form>
+                    {% else %}
+                    <form>
+                        <button formmethod="get" formaction="/auditory/{{closest_aud.number_of_auditory}}/{{closest_aud.number_of_action}}">
+                            Бой {{closest_aud.number_of_action}} - {{closest_aud.number_of_auditory}} ауд.
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+                <td>
+                    <form>
+                        <button formmethod="post" formaction="/auth/logout">
+                            Выход
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>{{ cookie_user }}</p>
+<p>{{ cookie_user.id }}</p>
+<p>{{ cookie_user.email }}</p>
+<div>
+    <div>
+        <h2>
+            Мероприятия
+        </h2>
+    </div>
+    <div>
+        {% for aud in aud_list %}
+            <div>
+                <a href="/auditory/{{aud.number_of_auditory}}/{{aud.number_of_action}}"> Номер аудитории: {{ aud.number_of_auditory }}, номер боя: {{ aud.number_of_action }}</a>
+                {% if aud.is_complete == True %}
+                <p>Завершено</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

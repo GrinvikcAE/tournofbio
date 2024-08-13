@@ -22,3 +22,14 @@ personal_rating = Table(
     Column('task_mark', JSON),
     Column('final_mark', Float, default=0),
 )
+
+
+marks = Table(
+    'marks',
+    metadata,
+    Column('id', Integer, primary_key=True, index=True),
+    Column('auditory', String),
+    Column('action', String),
+    Column('jury_mark', JSON),
+
+)

@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', path='/base.css') }}" type="text/css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    {% block head %}{% endblock %}
+    <title>{{ auditory.number_of_auditory }} ауд. — {{ auditory.number_of_action }} бой</title>
+
+    <script>
+        let query = String(document.location.href).split('/');
+        let auditory = String(query[query.length - 2]);
+        let action = Number(query[query.length - 1].replace('?', ''));
+    </script>
+
+    <script>
+        function toggleDiv(targetId, otherId1, otherId2, otherId3, otherId4, otherId5) {
+            let style = document.getElementById(targetId).style;
+            let style1 = document.getElementById(otherId1).style;
+            let style2 = document.getElementById(otherId2).style;
+            let style3 = document.getElementById(otherId3).style;
+            let style4 = document.getElementById(otherId4).style;
+            let style5 = document.getElementById(otherId5).style;
+            style.display = "block";
+            style1.display = "none";
+            style2.display = "none";
+            style3.display = "none";
+            style4.display = "none";
+            style5.display = "none";
+        }
+    </script>
+</head>
+
+<body>
+    <h2 hidden="hidden">Аудитория: {{ auditory.number_of_auditory }}, Бой: {{ auditory.number_of_action }}</h2>
+    <h2 hidden="hidden">Your email: <span id="user_email"> {{ user.email }}</span></h2>
+    <h2 hidden="hidden">Your ID: <span id="user_id"> {{ user.id }}</span></h2>
+    <div>
+        <table>
+            <tbody>
+            <tr>
+                <form>
+                    <button formmethod="get" formaction="/{{user.id}}">
+                        Назад
+                    </button>
+                </form>
+            </tr>
+            <tr>
+                <button onclick="toggleDiv('jury', 'd1', 'd2', 'd3', 'd4', 'marks')">
+                    Жюри
+                </button>
+            </tr>
+            <tr>
+                <button onclick="toggleDiv('marks', 'jury', 'd1', 'd2', 'd3', 'd4')">
+                    Оценки
+                </button>
+            </tr>
+            <tr>
+                <button onclick="toggleDiv('d1', 'jury', 'd2', 'd3', 'd4', 'marks')">
+                    Действие 1
+                </button>
+            </tr>
+            <tr>
+                <button onclick="toggleDiv('d2', 'jury', 'd1', 'd3', 'd4', 'marks')">
+                    Действие 2
+                </button>
+            </tr>
+            <tr>
+                <button onclick="toggleDiv('d3', 'jury', 'd1', 'd2', 'd4', 'marks')">
+                    Действие 3
+                </button>
+
+            </tr>
+            {% if auditory.command["commands"]|length == 4 %}
+            <tr>
+                <button onclick="toggleDiv('d4', 'jury', 'd1', 'd2', 'd3', 'marks')">
+                    Действие 4
+                </button>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div id="jury" style="display: block;">
+        <h3>Жюри</h3>
+<!--        <p id="inner_jury"></p>-->
+        <table>
+            {% for jury in jurys %}
+                <tr>{{ jury.lastname }} {{ jury.name }} {{ jury.surname }}</tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div id="marks" style="display: none;">
+        <h3>Оценки</h3>
+        <table border="1">
+            <tbody>
+                <tr>
+                    <th rowspan="2">ФИО</th>
+                    <th colspan="6">Действие 1</th>
+                    <th colspan="6">Действие 2</th>
+                    <th colspan="6">Действие 3</th>
+                    {% if auditory.command["commands"]|length == 4 %}
+                        <th>Действие 4</th>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th colspan="3">Д</th>
+                    <th colspan="2">О</th>
+                    <th>Р</th>
+                    <th colspan="3">Д</th>
+                    <th colspan="2">О</th>
+                    <th>Р</th>
+                    <th colspan="3">Д</th>
+                    <th colspan="2">О</th>
+                    <th>Р</th>
+                </tr>
+                {% for jury in jurys %}
+                    <tr>
+
+                        <td id="jury-{{jury.id}}">{{ jury.lastname }} {{ jury.name }} {{ jury.surname }}</td>
+
+
+                        <td id="jury-{{jury.id}}-act1-d1">0</td>
+                        <td id="jury-{{jury.id}}-act1-d2">0</td>
+                        <td id="jury-{{jury.id}}-act1-d3">0</td>
+                        <td id="jury-{{jury.id}}-act1-o1">0</td>
+                        <td id="jury-{{jury.id}}-act1-o2">0</td>
+                        <td id="jury-{{jury.id}}-act1-r">0</td>
+
+
+                        <td id="jury-{{jury.id}}-act2-d1">0</td>
+                        <td id="jury-{{jury.id}}-act2-d2">0</td>
+                        <td id="jury-{{jury.id}}-act2-d3">0</td>
+                        <td id="jury-{{jury.id}}-act2-o1">0</td>
+                        <td id="jury-{{jury.id}}-act2-o2">0</td>
+                        <td id="jury-{{jury.id}}-act2-r">0</td>
+
+
+                        <td id="jury-{{jury.id}}-act3-d1">0</td>
+                        <td id="jury-{{jury.id}}-act3-d2">0</td>
+                        <td id="jury-{{jury.id}}-act3-d3">0</td>
+                        <td id="jury-{{jury.id}}-act3-o1">0</td>
+                        <td id="jury-{{jury.id}}-act3-o2">0</td>
+                        <td id="jury-{{jury.id}}-act3-r">0</td>
+
+                        {% if auditory.command["commands"]|length == 4 %}
+                        <td id="jury-{{jury.id}}-act4-d1">0</td>
+                        <td id="jury-{{jury.id}}-act4-d2">0</td>
+                        <td id="jury-{{jury.id}}-act4-d3">0</td>
+                        <td id="jury-{{jury.id}}-act4-o1">0</td>
+                        <td id="jury-{{jury.id}}-act4-o2">0</td>
+                        <td id="jury-{{jury.id}}-act4-r">0</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td>Результаты</td>
+
+                    <td colspan="3" id="res-act1-d">Д</td>
+                    <td colspan="2" id="res-act1-o">О</td>
+                    <td id="res-act1-r">Р</td>
+
+                    <td colspan="3" id="res-act2-d">Д</td>
+                    <td colspan="2" id="res-act2-o">О</td>
+                    <td id="res-act2-r">Р</td>
+
+                    <td colspan="3" id="res-act3-d">Д</td>
+                    <td colspan="2" id="res-act3-o">О</td>
+                    <td id="res-act3-r">Р</td>
+
+                    {% if auditory.command["commands"]|length == 4 %}
+                    <td colspan="3" id="res-act4-d">Д</td>
+                    <td colspan="2" id="res-act4-o">О</td>
+                    <td id="res-act4-r">Р</td>
+                    {% endif %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="d1" style="display: none;">
+        <h3>Действие 1</h3>
+        <table>
+            <tbody>
+                <tr>
+                    <td> Докладчик </td>
+                    <td>
+                        <select id="act1-d1" onchange="sendMessage(event, 'act1-d1', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act1-d2" onchange="sendMessage(event, 'act1-d2', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act1-d3" onchange="sendMessage(event, 'act1-d3', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Оппонент </td>
+                    <td>
+                         <select id="act1-o1" onchange="sendMessage(event, 'act1-o1', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                             <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act1-o2" onchange="sendMessage(event, 'act1-o2', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Рецензент </td>
+                    <td>
+                        <select id="act1-r" onchange="sendMessage(event, 'act1-r', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="d2" style="display: none;">
+        <h3>Действие 2</h3>
+        <table>
+            <tbody>
+                <tr>
+                    <td> Докладчик </td>
+                    <td>
+                        <select id="act2-d1" onchange="sendMessage(event, 'act2-d1', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act2-d2" onchange="sendMessage(event, 'act2-d2', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act2-d3" onchange="sendMessage(event, 'act2-d3', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Оппонент </td>
+                    <td>
+                         <select id="act2-o1" onchange="sendMessage(event, 'act2-o1', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                             <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act2-o2" onchange="sendMessage(event, 'act2-o2', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Рецензент </td>
+                    <td>
+                        <select id="act2-r" onchange="sendMessage(event, 'act2-r', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="d3" style="display: none;">
+        <h3>Действие 3</h3>
+        <table>
+            <tbody>
+                <tr>
+                    <td> Докладчик </td>
+                    <td>
+                        <select id="act3-d1" onchange="sendMessage(event, 'act3-d1', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act3-d2" onchange="sendMessage(event, 'act3-d2', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act3-d3" onchange="sendMessage(event, 'act3-d3', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Оппонент </td>
+                    <td>
+                         <select id="act3-o1" onchange="sendMessage(event, 'act3-o1', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                             <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act3-o2" onchange="sendMessage(event, 'act3-o2', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Рецензент </td>
+                    <td>
+                        <select id="act3-r" onchange="sendMessage(event, 'act3-r', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="d4" style="display: none;">
+        <h3>Действие 4</h3>
+        <table>
+            <tbody>
+                <tr>
+                    <td> Докладчик </td>
+                    <td>
+                        <select id="act4-d1" onchange="sendMessage(event, 'act4-d1', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act4-d2" onchange="sendMessage(event, 'act4-d2', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act4-d3" onchange="sendMessage(event, 'act4-d3', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Оппонент </td>
+                    <td>
+                         <select id="act4-o1" onchange="sendMessage(event, 'act4-o1', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                             <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="act4-o2" onchange="sendMessage(event, 'act4-o2', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Рецензент </td>
+                    <td>
+                        <select id="act4-r" onchange="sendMessage(event, 'act4-r', '{{ user.id }}')">
+                            <option value="0">0</option>
+                            <option value="5+">5+</option>
+                            <option value="5">5</option>
+                            <option value="5-">5-</option>
+                            <option value="4+">4+</option>
+                            <option value="4">4</option>
+                            <option value="4-">4-</option>
+                            <option value="3+">3+</option>
+                            <option value="3">3</option>
+                            <option value="3-">3-</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let d_mark = {100: '5+', 85: '5', 70: '5-', 60: '4+', 50: '4', 40: '4-', 30: '3+', 25: '3', 20: '3-', 0: '0'}
+        let user_id = Number(document.getElementById("user_id").innerHTML);
+        let ws = new WebSocket(`ws://localhost:8000/auditory/ws/${auditory}/${action}/${user_id}`);
+        ws.onmessage = function(event) {
+            let elem;
+            let content = JSON.parse(event.data)
+            // let messages = document.getElementById('messages')
+            // let message = document.createElement('li')
+            // let data = document.createTextNode(content['data'])
+
+            let marks = JSON.parse(content['marks'])
+            console.log(marks)
+            for (let jury in marks[auditory][action]) {
+                for (let act_1 in marks[auditory][action][jury]) {
+                    for (let act_2 in marks[auditory][action][jury][act_1]) {
+                        let mark = marks[auditory][action][jury][act_1][act_2];
+                        // if (mark !== 0) {
+                            elem = document.getElementById('jury-' + jury + '-' + act_1 + '-' + act_2);
+                            elem.textContent = mark;
+                            console.log(mark)
+                            console.log(d_mark[mark])
+                            if (jury === user_id) {
+                                elem = document.getElementById(act_1 + '-' + act_2);
+                                elem.value = d_mark[mark];
+
+                            }
+                        // }
+                    }
+                }
+            }
+
+            let result = JSON.parse(content['result']);
+            let mark;
+
+            let act1_d = result['act1'][0];
+            if (act1_d) {mark = document.getElementById('res-act1-d');mark.textContent = act1_d;}
+
+            let act1_o = result['act1'][1];
+            if (act1_o) {mark = document.getElementById('res-act1-o');mark.textContent = act1_o;}
+
+            let act1_r = result['act1'][2];
+            if (act1_r) {mark = document.getElementById('res-act1-r');mark.textContent = act1_r;}
+
+            let act2_d = result['act2'][0];
+            if (act2_d) {mark = document.getElementById('res-act2-d');mark.textContent = act2_d;}
+
+            let act2_o = result['act2'][1];
+            if (act2_d) {mark = document.getElementById('res-act2-o');mark.textContent = act2_o;}
+
+            let act2_r = result['act2'][2];
+            if (act2_r) {mark = document.getElementById('res-act2-r');mark.textContent = act2_r;}
+
+            let act3_d = result['act3'][0];
+            if (act3_d) {mark = document.getElementById('res-act3-d');mark.textContent = act3_d;}
+
+            let act3_o = result['act3'][1];
+            if (act3_o) {mark = document.getElementById('res-act3-o');mark.textContent = act3_o;}
+
+            let act3_r = result['act3'][2];
+            if (act3_r) {mark = document.getElementById('res-act3-r');mark.textContent = act3_r;}
+
+            let act4_d = result['act4'][0];
+            if (act4_d) {mark = document.getElementById('res-act4-d');mark.textContent = act4_d;}
+
+            let act4_o = result['act4'][1];
+            if (act4_o) {mark = document.getElementById('res-act4-o');mark.textContent = act4_o;}
+
+            let act4_r = result['act4'][2];
+            if (act4_r) {mark = document.getElementById('res-act4-r');mark.textContent = act4_r;}
+
+
+            // message.appendChild((data))
+            // messages.appendChild(message)
+        };
+
+        function sendMessage(event, block, user_id) {
+            let input = document.getElementById(block)
+            let marks_block = document.getElementById('jury-' + user_id + '-' + block)
+            marks_block.textContent = input.value
+            ws.send((user_id + '|' + block + '|' + input.value))
+            console.log('send')
+            event.preventDefault()
+        }
+    </script>
+</body>
+</html>

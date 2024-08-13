@@ -7,9 +7,12 @@ from database import engine, async_session_maker
 from auth.models import role, user
 from auth.routers import router as router_auth
 from command.routers import router as router_command
+from rating.models import marks
 from task.routers import router as router_task
 from rating.routers import router as router_rating
 from user.routers import router as router_user
+from auditory.sockets import router as router_auditory_sockets
+from auditory.routers import router as router_auditory
 
 from admin.routers import router as router_admin
 
@@ -63,6 +66,17 @@ async def add_on_startup():
     except Exception as e:
         print(e)
 
+    # try:
+    #     async with engine.begin() as conn:
+    #         mrks = [{'auditory': '1', 'action': '1', 'jury_mark': {}}]
+    #         try:
+    #             await conn.execute(marks.insert(), mrks)
+    #         except Exception as e:
+    #             print(e)
+    #     await engine.dispose()
+    # except Exception as e:
+    #     print(e)
+
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
 
@@ -81,12 +95,15 @@ app.add_middleware(
     max_age=10,
     allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["Content-Type", "Access-Control-Allow-Headers", "Access-Control-Allow-Methods",
-                   "Authorization", "Set-Cookie", "Cross-Origin", 'Access-Control-Request-Method']
+                   "Authorization", "Set-Cookie", "Cross-Origin", 'Access-Control-Request-Method'
+                   ]
 )
 
 app.include_router(router_auth)
 app.include_router(router_user)
 app.include_router(router_command)
+app.include_router(router_auditory_sockets)
+app.include_router(router_auditory)
 
 app.include_router(router_task)
 app.include_router(router_rating)
@@ -94,3 +111,4 @@ app.include_router(router_rating)
 app.include_router(router_pages)
 
 app.include_router(router_admin)
+

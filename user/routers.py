@@ -1,10 +1,15 @@
 from database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Form, HTTPException
+from fastapi.responses import RedirectResponse
 from sqlalchemy import insert, select, delete, update
 from command.models import command, member
 from auth.models import role, user
 from security.secr import get_current_user_from_cookie
+
+from security.secr import COOKIE_NAME, ACCESS_TOKEN_EXPIRE_MINUTES
+from repository.user import UserRepository
+from security.secr import create_access_token
 
 router = APIRouter(
     prefix='/user',
@@ -26,10 +31,10 @@ async def add_command(name: str = Form(max_length=128),
             try:
                 stmt = insert(command).values(name=name)
                 await session.execute(stmt)
+                await session.commit()
 
                 stmt = update(user).where(user.c.email == current_user['email']).values(commands_name=result)
                 await session.execute(stmt)
-
                 await session.commit()
                 return 'Command added successfully'
             except:
@@ -43,7 +48,13 @@ async def add_command(name: str = Form(max_length=128),
             stmt = update(user).where(user.c.email == current_user['email']).values(commands_name=result[0]['commands_name'])
             await session.execute(stmt)
             await session.commit()
-            return 'User updated successfully'
+
+            user_repository = UserRepository(session)
+            db_user = await user_repository.get_user_by_field('email', current_user['email'])
+            token = await create_access_token(db_user)
+            response = RedirectResponse(url=f"/{current_user['id']}", status_code=302)
+            response.set_cookie(key=COOKIE_NAME, value=token, httponly=True, expires=ACCESS_TOKEN_EXPIRE_MINUTES)
+            return response
     except:
         raise HTTPException(status_code=404, detail='Credentials not correct')
 

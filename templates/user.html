@@ -1,10 +1,76 @@
 {% extends "base.html" %}
 
 {% block head %}
+
 {% endblock %}
 
 
 {% block content %}
-    {{ cookie_user }}
-    {{ cookie_user.email }}
+    <form>
+        <button formmethod="post" formaction="/auth/logout">
+            Выход
+        </button>
+    </form>
+    <form>
+        <button formmethod="get" formaction="/{{cookie_user.id}}">
+            Расписание
+        </button>
+    </form>
+    <p>{{ cookie_user }}</p>
+    <p>{{ cookie_user.id }}</p>
+    <p>{{ cookie_user.email }}</p>
+    <div hidden="hidden">
+        {% if cookie_user.commands_name != None %}
+            <div>
+                <table>
+                    <caption>
+                        <p>Аффилиация с командами:</p>
+                    </caption>
+                    {% for command in cookie_user.commands_name[0]['commands'] %}
+                    <tr>
+                        <td>
+                            {% if cookie_user.role_id not in (3, 4) %}
+                                <a href="{{cookie_user.id}}/{{command}}"> {{ command }} </a>
+                            {% else %}
+                                {{ command }}
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                </table>
+
+            </div>
+            <div>
+                {% if cookie_user.role_id in (3, 4) %}
+                    <div>
+                        <form method="post" action="/user/add_command">
+                            <p>
+                                Напишите название команды, с которой вы связаны:<br>
+                                <label>
+                                    <input name="name" type="text" title="Обязательное поле для заполнения" required>
+                                </label>
+                            </p>
+                            <button type="submit">Добавить</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if cookie_user.role_id in (1, 2, 6) %}
+                <div>
+                    <form method="post" action="/user/add_command">
+                        <p>
+                            Название команды:<br>
+                            <label>
+                                <input name="name" type="text" title="Обязательное поле для заполнения" required>
+                            </label>
+                        </p>
+                        <button type="submit">Добавить</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
 {% endblock %}

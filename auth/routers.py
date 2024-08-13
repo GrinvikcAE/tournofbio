@@ -17,9 +17,11 @@ router = APIRouter(
 
 
 @router.post('/login')
-async def login(email: EmailStr = Form(max_length=128),
-                password: str = Form(max_length=128, min_length=6),
-                session: AsyncSession = Depends(get_async_session)):
+async def login(
+        email: EmailStr | str = Form(max_length=128),
+        password: str = Form(max_length=128, min_length=6),
+        session: AsyncSession = Depends(get_async_session)
+):
     user_repository = UserRepository(session)
     db_user = await user_repository.get_user_by_field('email', email)
     if db_user is None:
@@ -35,15 +37,17 @@ async def login(email: EmailStr = Form(max_length=128),
 
 @router.post('/logout')
 async def logout():
-    response = RedirectResponse(url='')
+    response = RedirectResponse(url='/')
     response.delete_cookie(key=COOKIE_NAME)
     return response
 
 
 @router.post('/signup')
-async def signup(email: EmailStr = Form(max_length=128),
-                 password: str = Form(max_length=128, min_length=6),
-                 session: AsyncSession = Depends(get_async_session)):
+async def signup(
+        email: EmailStr = Form(max_length=128),
+        password: str = Form(max_length=128, min_length=6),
+        session: AsyncSession = Depends(get_async_session)
+):
     result = {'email': email,
               'hashed_password': await get_password_hash(password)}
 
