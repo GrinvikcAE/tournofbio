@@ -598,17 +598,17 @@
                 for (let act_1 in marks[auditory][action][jury]) {
                     for (let act_2 in marks[auditory][action][jury][act_1]) {
                         let mark = marks[auditory][action][jury][act_1][act_2];
-                        // if (mark !== 0) {
+                        if (mark !== 0) {
                             elem = document.getElementById('jury-' + jury + '-' + act_1 + '-' + act_2);
-                            elem.textContent = mark;
-                            console.log(mark)
-                            console.log(d_mark[mark])
-                            if (jury === user_id) {
+                            elem.textContent = String(mark);
+                            if (String(jury) === String(user_id)) {
+                                console.log('True')
                                 elem = document.getElementById(act_1 + '-' + act_2);
-                                elem.value = d_mark[mark];
+                                elem.value = String(d_mark[mark]);
+                                // elem.selectedIndex = 1;
 
                             }
-                        // }
+                        }
                     }
                 }
             }
