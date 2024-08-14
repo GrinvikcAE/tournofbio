@@ -8,7 +8,6 @@ from security.secr import COOKIE_NAME, ACCESS_TOKEN_EXPIRE_MINUTES
 from security.secr import get_admin_status_from_cookie, get_current_user_from_cookie
 from sqlalchemy import insert, select, delete, update, and_
 from auditory.models import auditory
-from sqlalchemy import and_
 
 # Column('id', Integer, primary_key=True, index=True),
 # Column('number_of_action', Integer),
@@ -104,9 +103,10 @@ async def del_auditory(
 ):
     if admin_status:
         try:
-            stmt = delete(auditory).where(and_(auditory.c.number_of_auditory == str(aud_num),
-                                               auditory.c.number_of_action == int(action)))
+            stmt = delete(auditory).where(and_(auditory.c.number_of_auditory == aud_num,
+                                               auditory.c.number_of_action == action))
             await session.execute(stmt)
+            await session.commit()
             return f'Deleted'
         except Exception as e:
             print(e)

@@ -28,7 +28,8 @@ async def get_root_page(
     if cookie_user is None or request.cookies == {}:
         return templates.TemplateResponse('root.html', {'request': request})
     else:
-        return await get_user(request=request, cookie_user=cookie_user, session=session)
+        return RedirectResponse(f'/{cookie_user["id"]}', status_code=302)
+        # return await get_user(request=request, cookie_user=cookie_user, session=session)
 
 
 @router.get('/auditory/{auditory}/{action}')
