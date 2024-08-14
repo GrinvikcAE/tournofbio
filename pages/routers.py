@@ -131,17 +131,17 @@ async def get_user(
     #     return templates.TemplateResponse('user.html', {'request': request, 'cookie_user': cookie_user})
 
 
-@router.api_route('/{user}/{command_name}', response_class=HTMLResponse, methods=["GET", "POST"])
-async def get_command(
-        command_name: str,
-        request: Request,
-        cookie_user=Depends(get_current_user_from_cookie),
-        session: AsyncSession = Depends(get_async_session)
-):
-    if cookie_user is None:
-        return await get_root_page(request)
-    else:
-        members = await get_members(command_name, session)
-        return templates.TemplateResponse('command.html', {'request': request,
-                                                           'command_name': command_name,
-                                                           'members': members})
+# @router.api_route('/{user}/{command_name}', response_class=HTMLResponse, methods=["GET", "POST"])
+# async def get_command(
+#         command_name: str,
+#         request: Request,
+#         cookie_user=Depends(get_current_user_from_cookie),
+#         session: AsyncSession = Depends(get_async_session)
+# ):
+#     if cookie_user is None:
+#         return await get_root_page(request)
+#     else:
+#         members = await get_members(command_name, session)
+#         return templates.TemplateResponse('command.html', {'request': request,
+#                                                            'command_name': command_name,
+#                                                            'members': members})

@@ -33,8 +33,8 @@ auth_back = AdminAuth(secret_key=JWT_SECRET, session=async_session_maker())
 admin = Admin(app=app, engine=async_session_maker, authentication_backend=auth_back)
 
 
-@app.on_event("startup")
-async def add_on_startup():
+# @app.on_event("startup")
+# async def add_on_startup():
     # try:
     #     admin.add_view(RoleAdmin)
     #     admin.add_view(UserAdmin)
@@ -167,16 +167,16 @@ async def add_on_startup():
     # except Exception as e:
     #     print(e)
 
-    try:
-        async with engine.begin() as conn:
-            mrks = [{'auditory': '1', 'action': '1', 'jury_mark': {}}]
-            try:
-                await conn.execute(marks.insert(), mrks)
-            except Exception as e:
-                print(e)
-        await engine.dispose()
-    except Exception as e:
-        print(e)
+    # try:
+    #     async with engine.begin() as conn:
+    #         mrks = [{'auditory': '1', 'action': '1', 'jury_mark': {}}]
+    #         try:
+    #             await conn.execute(marks.insert(), mrks)
+    #         except Exception as e:
+    #             print(e)
+    #     await engine.dispose()
+    # except Exception as e:
+    #     print(e)
 
 
 app.mount('/static', StaticFiles(directory='static'), name='static')
@@ -189,6 +189,7 @@ origins = [
     'https://0.0.0.0:8000',
     'http://0.0.0.0:8000',
     'https://tournofbio.onrender.com',
+    'http://tournofbio.onrender.com',
 ]
 
 app.add_middleware(

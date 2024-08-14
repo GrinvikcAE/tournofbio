@@ -2,10 +2,13 @@ from database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Form, HTTPException
 from fastapi.responses import RedirectResponse
+
+from rating.models import marks
 from security.secr import COOKIE_NAME, ACCESS_TOKEN_EXPIRE_MINUTES
 from security.secr import get_admin_status_from_cookie, get_current_user_from_cookie
 from sqlalchemy import insert, select, delete, update, and_
 from auditory.models import auditory
+from sqlalchemy import and_
 
 # Column('id', Integer, primary_key=True, index=True),
 # Column('number_of_action', Integer),
@@ -76,6 +79,9 @@ async def add_auditory(
                 stmt = insert(auditory).values(**result)
                 await session.execute(stmt)
                 await session.commit()
+                mrks = {'auditory': '1', 'action': '1', 'jury_mark': {}}
+                stmt = insert(marks).values(mrks)
+                await session.execute(stmt)
                 return 'Successful'
             except Exception as e:
                 print(e)
@@ -88,3 +94,22 @@ async def add_auditory(
     else:
         raise HTTPException(status_code=401, detail='Unauthorized as superuser')
 
+
+@router.post('/del_auditory', dependencies=[Depends(get_admin_status_from_cookie)])
+async def del_auditory(
+    aud_num: str,
+    action: int,
+    admin_status: bool = Depends(get_admin_status_from_cookie),
+    session: AsyncSession = Depends(get_async_session)
+):
+    if admin_status:
+        try:
+            stmt = delete(auditory).where(and_(auditory.c.number_of_auditory == str(aud_num),
+                                               auditory.c.number_of_action == int(action)))
+            await session.execute(stmt)
+            return f'Deleted'
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=401, detail='Credentials not correct')
+    else:
+        raise HTTPException(status_code=401, detail='Unauthorized as superuser')
