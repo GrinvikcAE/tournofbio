@@ -39,7 +39,6 @@ async def get_sockets_page(
         cookie_user=Depends(get_current_user_from_cookie),
         session: AsyncSession = Depends(get_async_session),
 ):
-    print(request.url)
     if cookie_user is None or request.cookies == {}:
         return await get_root_page(request, session=session)
     aud = await get_auditory_by_number(number_of_auditory=auditory, action=action, session=session)
@@ -82,11 +81,8 @@ async def get_user(
         return await get_root_page(request, session=session)
     if cookie_user['role_id'] in (1, 2):
         aud_list = await get_auditory(session=session)
-        if aud_list is not None:
-            closest_aud = aud_list[0]
-        else:
-            closest_aud = {'number_of_auditory': '---',
-                           'number_of_action': '---'}
+        closest_aud = aud_list[0] if len(aud_list) != 0 else {'number_of_auditory': '---',
+                                                                  'number_of_action': '---'}
         return templates.TemplateResponse('master.html',
                                           {
                                               'request': request,
