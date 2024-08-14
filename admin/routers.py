@@ -25,7 +25,8 @@ async def admin_panel(user_status: bool = Depends(get_admin_status_from_cookie))
 
 
 @router.post('/update_value_to_user', dependencies=[Depends(get_admin_status_from_cookie)])
-async def update_value(email: EmailStr = Form(max_length=128),
+# async def update_value(email: EmailStr = Form(max_length=128),
+async def update_value(email: str = Form(max_length=128),
                        field: str = Form(max_length=128),
                        value: int | str | bool = Form(max_length=128),
                        user_status: bool = Depends(get_admin_status_from_cookie),

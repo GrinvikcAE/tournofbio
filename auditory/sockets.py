@@ -56,7 +56,7 @@ class Marks:
             self.aud_dict[auditory][action] = {}
 
     def add_jury(self, auditory: str, action: str, jury: str):
-        if jury not in  self.aud_dict[auditory][action]:
+        if jury not in self.aud_dict[auditory][action]:
             self.aud_dict[auditory][action][jury] = {'act1': {'d1': 0,
                                                               'd2': 0,
                                                               'd3': 0,
@@ -115,8 +115,9 @@ async def websocket_endpoint(websocket: WebSocket, auditory: str, action: int, c
                              session: AsyncSession = Depends(get_async_session)):
     manager = managers.active_managers[(auditory, action)]
     new_marks = await get_marks(auditory=auditory, action=str(action), session=session)
-    new_marks = new_marks['jury_mark']
-    marks.aud_dict = new_marks
+    if new_marks is not None:
+        new_marks = new_marks['jury_mark']
+        marks.aud_dict = new_marks
 
     marks.add_auditory(auditory=auditory, action=str(action))
     marks.add_jury(auditory=auditory, action=str(action), jury=str(client_id))
@@ -124,8 +125,6 @@ async def websocket_endpoint(websocket: WebSocket, auditory: str, action: int, c
 
     active_user = [ws['user_id'] for ws in manager.active_connections]
     result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
-    print(new_marks)
-    print(marks.get_results(auditory=auditory, action=str(action)))
     message = json.dumps(
         {'client_id': client_id,
          'data': None,
@@ -150,10 +149,10 @@ async def websocket_endpoint(websocket: WebSocket, auditory: str, action: int, c
                                session=session)
 
             new_marks = await get_marks(auditory=auditory, action=str(action), session=session)
-            new_marks = new_marks['jury_mark']
-            marks.aud_dict = new_marks
-            print(marks.aud_dict)
-            print()
+            if new_marks is not None:
+                new_marks = new_marks['jury_mark']
+                marks.aud_dict = new_marks
+
             result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
 
             message = json.dumps(
