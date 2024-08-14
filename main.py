@@ -197,10 +197,11 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     max_age=1000,
-    allow_methods=["GET", "POST", "DELETE"],
-    allow_headers=["Content-Type", "Access-Control-Allow-Headers", "Access-Control-Allow-Methods",
-                   "Authorization", "Set-Cookie", "Cross-Origin", 'Access-Control-Request-Method'
-                   ]
+    allow_methods=["*"],
+    allow_headers=["*"],
+    # allow_headers=["Content-Type", "Access-Control-Allow-Headers", "Access-Control-Allow-Methods",
+    #                "Authorization", "Set-Cookie", "Cross-Origin", 'Access-Control-Request-Method'
+    #                ]
 )
 
 app.include_router(router_auth)
