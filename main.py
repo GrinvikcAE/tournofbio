@@ -56,8 +56,108 @@ async def add_on_startup():
         print(e)
     try:
         async with engine.begin() as conn:
-            users = [{'email': ADMIN, 'hashed_password': await get_password_hash(PASWD),
-                      'is_superuser': True, 'role_id': 1}]
+            users = [
+                {'email': ADMIN,
+                 'hashed_password': await get_password_hash(PASWD),
+                 'is_superuser': True, 'role_id': 1},
+                {'email': 'Баймак',
+                 'lastname': 'Баймак',
+                 'name': 'Татьяна',
+                 'hashed_password': await get_password_hash('nTtEcB2j'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Андреюшкова',
+                 'lastname': 'Андреюшкова',
+                 'name': 'Дарья',
+                 'hashed_password': await get_password_hash('2inQoYYn'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Баласов',
+                 'lastname': 'Баласов',
+                 'name': 'Сергей',
+                 'hashed_password': await get_password_hash('TFkfD7sm'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Линков',
+                 'lastname': 'Линков',
+                 'name': 'Никита',
+                 'hashed_password': await get_password_hash('k35QESi5'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Маршалкин',
+                 'lastname': 'Маршалкин',
+                 'name': 'Леонид',
+                 'hashed_password': await get_password_hash('24YXwVEC'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Григорьева',
+                 'lastname': 'Григорьева',
+                 'name': 'Елена',
+                 'hashed_password': await get_password_hash('4cBXO6uG'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Воронина',
+                 'lastname': 'Воронина',
+                 'name': 'Елена',
+                 'surname': 'Николаевна',
+                 'hashed_password': await get_password_hash('wZv6basQ'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Тепер',
+                 'lastname': 'Тепер',
+                 'name': 'София',
+                 'hashed_password': await get_password_hash('9AS4yU22'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Волошина',
+                 'lastname': 'Волошина',
+                 'name': 'Марина',
+                 'surname': 'Александровна',
+                 'hashed_password': await get_password_hash('uCT14G5p'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Шефер',
+                 'lastname': 'Шефер',
+                 'name': 'Алексей',
+                 'hashed_password': await get_password_hash('7dpQVztM'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Жданков',
+                 'lastname': 'Жданков',
+                 'name': 'Илья',
+                 'surname': 'Васильевич',
+                 'hashed_password': await get_password_hash('HuinyaIsPodKonya'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Держалова',
+                 'lastname': 'Держалова',
+                 'name': 'Алина',
+                 'hashed_password': await get_password_hash('Mebm5BY3'),
+                 'is_superuser': False, 'role_id': 3},
+                {'email': 'Сидоренко',
+                 'lastname': 'Сидоренко',
+                 'name': 'Александра',
+                 'hashed_password': await get_password_hash('fG673trY'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Яковлева',
+                 'lastname': 'Яковлева',
+                 'name': 'Софья',
+                 'hashed_password': await get_password_hash('Fg45jpR3'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Ломова',
+                 'lastname': 'Ломова',
+                 'name': 'Лариса',
+                 'surname': 'Анатольевна',
+                 'hashed_password': await get_password_hash('HD379tYA'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Шин',
+                 'lastname': 'Шин',
+                 'name': 'Елизавета',
+                 'hashed_password': await get_password_hash('ZabiliNaTebya'),
+                 'is_superuser': False, 'role_id': 4},
+                {'email': 'Электровеник',
+                 'hashed_password': await get_password_hash('690Su67H'),
+                 'is_superuser': False, 'role_id': 5},
+                {'email': 'Овощи',
+                 'hashed_password': await get_password_hash('56Dsh54X'),
+                 'is_superuser': False, 'role_id': 5},
+                {'email': 'НеТотПрайд',
+                 'hashed_password': await get_password_hash('Ft4wS38'),
+                 'is_superuser': False, 'role_id': 5},
+                {'email': 'БезСмысла',
+                 'hashed_password': await get_password_hash('CV72ed12'),
+                 'is_superuser': False, 'role_id': 5},
+
+            ]
             try:
                 await conn.execute(user.insert(), users)
             except Exception as e:
@@ -66,27 +166,27 @@ async def add_on_startup():
     except Exception as e:
         print(e)
 
-    # try:
-    #     async with engine.begin() as conn:
-    #         mrks = [{'auditory': '1', 'action': '1', 'jury_mark': {}}]
-    #         try:
-    #             await conn.execute(marks.insert(), mrks)
-    #         except Exception as e:
-    #             print(e)
-    #     await engine.dispose()
-    # except Exception as e:
-    #     print(e)
+    try:
+        async with engine.begin() as conn:
+            mrks = [{'auditory': '1', 'action': '1', 'jury_mark': {}}]
+            try:
+                await conn.execute(marks.insert(), mrks)
+            except Exception as e:
+                print(e)
+        await engine.dispose()
+    except Exception as e:
+        print(e)
+
 
 app.mount('/static', StaticFiles(directory='static'), name='static')
-
 
 origins = [
     'http://localhost:8000',
     'https://localhost:8000',
     'http://127.0.0.1:8000',
     'https://127.0.0.1:8000',
+    'https://tournofbio.onrender.com',
 ]
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -111,4 +211,3 @@ app.include_router(router_rating)
 app.include_router(router_pages)
 
 app.include_router(router_admin)
-

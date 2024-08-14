@@ -33,6 +33,7 @@ async def login(
         return response
     else:
         raise HTTPException(status_code=401, detail='Credentials not correct')
+        # return await get_root_page(request, session=session)
 
 
 @router.post('/logout')

@@ -43,7 +43,7 @@ async def get_sockets_page(
         return await get_root_page(request, session=session)
     aud = await get_auditory_by_number(number_of_auditory=auditory, action=action, session=session)
 
-    if cookie_user['role_id'] in (1, 2):
+    if cookie_user['role_id'] in (1, 2, 3, 4, 5):
         managers.create_manager(auditory=auditory, action=action)
         stmt = select(user).where(or_(user.c.id in aud.jury['jury'], user.c.id == aud.master))
         result = await session.execute(stmt)
@@ -53,22 +53,32 @@ async def get_sockets_page(
                                                             'user': cookie_user,
                                                             'jurys': jurys
                                                             })
-    elif cookie_user['role_id'] == 3 and cookie_user['id'] == aud.master:
-        managers.create_manager(auditory=auditory, action=action)
-        stmt = select(user).where(or_(user.c.id in aud.jury['jury'], user.c.id == aud.master))
-        result = await session.execute(stmt)
-        jurys = result.mappings().all()
-        return templates.TemplateResponse('auditory.html', {'request': request,
-                                                            'auditory': aud,
-                                                            'user': cookie_user,
-                                                            'jurys': jurys})
-    elif cookie_user['role_id'] == 4 and cookie_user['id'] in aud.jury['jury']:
-        managers.create_manager(auditory=auditory, action=action)
-        return templates.TemplateResponse('auditory.html', {'request': request,
-                                                            'auditory': aud,
-                                                            'user': cookie_user, })
-    else:
-        return templates.TemplateResponse('user.html', {'request': request, 'cookie_user': cookie_user})
+    # if cookie_user['role_id'] in (3, 4):
+    #     managers.create_manager(auditory=auditory, action=action)
+    #     stmt = select(user).where(or_(user.c.id in aud.jury['jury'], user.c.id == aud.master))
+    #     result = await session.execute(stmt)
+    #     jurys = result.mappings().all()
+    #     return templates.TemplateResponse('auditory.html', {'request': request,
+    #                                                         'auditory': aud,
+    #                                                         'user': cookie_user,
+    #                                                         'jurys': jurys
+    #                                                         })
+    # elif cookie_user['role_id'] == 3 and cookie_user['id'] == aud.master:
+    #     managers.create_manager(auditory=auditory, action=action)
+    #     stmt = select(user).where(or_(user.c.id in aud.jury['jury'], user.c.id == aud.master))
+    #     result = await session.execute(stmt)
+    #     jurys = result.mappings().all()
+    #     return templates.TemplateResponse('auditory.html', {'request': request,
+    #                                                         'auditory': aud,
+    #                                                         'user': cookie_user,
+    #                                                         'jurys': jurys})
+    # elif cookie_user['role_id'] == 4 and cookie_user['id'] in aud.jury['jury']:
+    #     managers.create_manager(auditory=auditory, action=action)
+    #     return templates.TemplateResponse('auditory.html', {'request': request,
+    #                                                         'auditory': aud,
+    #                                                         'user': cookie_user, })
+    # else:
+    #     return templates.TemplateResponse('user.html', {'request': request, 'cookie_user': cookie_user})
 
 
 @router.api_route('/{user}', response_class=HTMLResponse, methods=["GET", "POST"])
@@ -79,7 +89,7 @@ async def get_user(
 ):
     if cookie_user is None or request.cookies == {}:
         return await get_root_page(request, session=session)
-    if cookie_user['role_id'] in (1, 2):
+    if cookie_user['role_id'] in (1, 2, 3, 4, 5):
         aud_list = await get_auditory(session=session)
         closest_aud = aud_list[0] if len(aud_list) != 0 else {'number_of_auditory': '---',
                                                               'number_of_action': '---'}
@@ -91,29 +101,29 @@ async def get_user(
                                               'closest_aud': closest_aud
                                           }
                                           )
-    elif cookie_user['role_id'] in (3, 4):
-        aud_list = await get_auditory(session=session)
-        personal_aud = []
-        closest_aud = aud_list[0] if len(aud_list) != 0 else {'number_of_auditory': '---',
-                                                              'number_of_action': '---'}
-
-        for aud in aud_list:
-            if cookie_user['id'] == aud['master'] or cookie_user['id'] in aud['jury']['jury']:
-                personal_aud.append(aud)
-        if len(personal_aud) != 0:
-            for aud in personal_aud:
-                if not aud['is_complete']:
-                    closest_aud = aud
-                    break
-
-        return templates.TemplateResponse('master.html',
-                                          {
-                                              'request': request,
-                                              'cookie_user': cookie_user,
-                                              'aud_list': personal_aud,
-                                              'closest_aud': closest_aud
-                                          }
-                                          )
+    # elif cookie_user['role_id'] in (3, 4):
+    #     aud_list = await get_auditory(session=session)
+    #     personal_aud = []
+    #     closest_aud = aud_list[0] if len(aud_list) != 0 else {'number_of_auditory': '---',
+    #                                                           'number_of_action': '---'}
+    #
+    #     for aud in aud_list:
+    #         if cookie_user['id'] == aud['master'] or cookie_user['id'] in aud['jury']['jury']:
+    #             personal_aud.append(aud)
+    #     if len(personal_aud) != 0:
+    #         for aud in personal_aud:
+    #             if not aud['is_complete']:
+    #                 closest_aud = aud
+    #                 break
+    #
+    #     return templates.TemplateResponse('master.html',
+    #                                       {
+    #                                           'request': request,
+    #                                           'cookie_user': cookie_user,
+    #                                           'aud_list': personal_aud,
+    #                                           'closest_aud': closest_aud
+    #                                       }
+    #                                       )
 
     # if cookie_user['role_id'] == 5:
     #     return await get_command(command_name=cookie_user['commands_name'][0]['commands'][0], request=request)
