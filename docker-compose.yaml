@@ -8,13 +8,13 @@ services:
       - .env-dev
     container_name: tournofbio_app
     ports:
-      - "443:8000"
+      - "8000:8000"
     depends_on:
       - db
 
 
   db:
-    image: postgres:14
+    image: postgres:15
     container_name: tournofbio_app
     expose:
       - 5432
