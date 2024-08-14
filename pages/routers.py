@@ -82,7 +82,11 @@ async def get_user(
         return await get_root_page(request, session=session)
     if cookie_user['role_id'] in (1, 2):
         aud_list = await get_auditory(session=session)
-        closest_aud = aud_list[0]
+        if aud_list is not None:
+            closest_aud = aud_list[0]
+        else:
+            closest_aud = {'number_of_auditory': '---',
+                           'number_of_action': '---'}
         return templates.TemplateResponse('master.html',
                                           {
                                               'request': request,
