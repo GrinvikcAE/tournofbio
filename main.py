@@ -160,7 +160,7 @@ async def add_on_startup():
         for usr in users:
             async with engine.begin() as conn:
                 try:
-                    await conn.execute(user.insert(), usr)
+                    await conn.execute(user.insert(), [usr])
                 except Exception as e:
                     print(e)
             await engine.dispose()
