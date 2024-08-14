@@ -186,6 +186,8 @@ origins = [
     'https://localhost:8000',
     'http://127.0.0.1:8000',
     'https://127.0.0.1:8000',
+    'https://0.0.0.0:8000',
+    'http://0.0.0.0:8000',
     'https://tournofbio.onrender.com',
 ]
 
@@ -193,7 +195,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    max_age=10,
+    max_age=1000,
     allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["Content-Type", "Access-Control-Allow-Headers", "Access-Control-Allow-Methods",
                    "Authorization", "Set-Cookie", "Cross-Origin", 'Access-Control-Request-Method'
