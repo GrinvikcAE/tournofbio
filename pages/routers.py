@@ -44,7 +44,7 @@ async def get_sockets_page(
         return await get_root_page(request, session=session)
     aud = await get_auditory_by_number(number_of_auditory=auditory, action=action, session=session)
 
-    if cookie_user['role_id'] in (1, 2, 3, 4, 5):
+    if cookie_user['role_id'] in (1, 2, 3, 4):
         managers.create_manager(auditory=auditory, action=action)
         stmt = select(user).where(or_(user.c.id in aud.jury['jury'], user.c.id == aud.master))
         result = await session.execute(stmt)

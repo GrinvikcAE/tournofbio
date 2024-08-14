@@ -115,85 +115,58 @@ marks = Marks()
 @router.websocket("/ws/{auditory}/{action}/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, auditory: str, action: int, client_id: int,
                              session: AsyncSession = Depends(get_async_session)):
-    stmt = select(user).where(user.c.id == client_id)
-    result = await session.execute(stmt)
-    result = result.mappings().one_or_none()
-    if result in (1, 2, 3, 4):
-        manager = managers.active_managers[(auditory, action)]
-        new_marks = await get_marks(auditory=auditory, action=str(action), session=session)
-        if new_marks is not None:
-            new_marks = new_marks['jury_mark']
-            marks.aud_dict = new_marks
 
-        marks.add_auditory(auditory=auditory, action=str(action))
-        marks.add_jury(auditory=auditory, action=str(action), jury=str(client_id))
-        await manager.connect(websocket=websocket, user_id=client_id)
+    manager = managers.active_managers[(auditory, action)]
+    new_marks = await get_marks(auditory=auditory, action=str(action), session=session)
+    if new_marks is not None:
+        new_marks = new_marks['jury_mark']
+        marks.aud_dict = new_marks
 
-        active_user = [ws['user_id'] for ws in manager.active_connections]
-        result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
-        message = json.dumps(
-            {'client_id': client_id,
-             'data': None,
-             'active_users': active_user,
-             'marks': json.dumps(new_marks),
-             'result': result}
-        )
-        # await manager.send_personal_message(message, websocket=websocket)
+    marks.add_auditory(auditory=auditory, action=str(action))
+    marks.add_jury(auditory=auditory, action=str(action), jury=str(client_id))
+    await manager.connect(websocket=websocket, user_id=client_id)
 
-        await manager.broadcast(message)
+    active_user = [ws['user_id'] for ws in manager.active_connections]
+    result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
+    message = json.dumps(
+        {'client_id': client_id,
+         'data': None,
+         'active_users': active_user,
+         'marks': json.dumps(new_marks),
+         'result': result}
+    )
 
-        try:
-            while True:
-                data = await websocket.receive_text()
-                jury_id, act, mark = data.split('|')
-                act = act.split('-')
+    await manager.broadcast(message)
 
-                marks.update_mark(auditory=auditory, action=str(action), jury=str(client_id), act=act, mark=mark)
-                await update_marks(auditory=auditory,
-                                   action=str(action),
-                                   new_marks=marks.aud_dict,
-                                   session=session)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            jury_id, act, mark = data.split('|')
+            act = act.split('-')
 
-                new_marks = await get_marks(auditory=auditory, action=str(action), session=session)
-                if new_marks is not None:
-                    new_marks = new_marks['jury_mark']
-                    marks.aud_dict = new_marks
+            marks.update_mark(auditory=auditory, action=str(action), jury=str(client_id), act=act, mark=mark)
+            await update_marks(auditory=auditory,
+                               action=str(action),
+                               new_marks=marks.aud_dict,
+                               session=session)
 
-                result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
+            new_marks = await get_marks(auditory=auditory, action=str(action), session=session)
+            if new_marks is not None:
+                new_marks = new_marks['jury_mark']
+                marks.aud_dict = new_marks
 
-                message = json.dumps(
-                    {'client_id': client_id,
-                     'data': data,
-                     'active_users': active_user,
-                     'marks': json.dumps(marks.aud_dict),
-                     'result': result}
-                )
-                await manager.broadcast(message)
-        except WebSocketDisconnect:
-            manager.disconnect(websocket=websocket, user_id=client_id)
+            result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
 
-    elif result == 5:
-        manager = managers.active_managers[(auditory, action)]
-        new_marks = await get_marks(auditory=auditory, action=str(action), session=session)
-        await manager.connect(websocket=websocket, user_id=client_id)
-        result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
-        message = json.dumps(
-            {'client_id': client_id,
-             'data': None,
-             'marks': json.dumps(new_marks),
-             'result': result}
-        )
-        await manager.broadcast(message)
-        try:
-            while True:
-                result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
-                message = json.dumps(
-                    {'client_id': client_id,
-                     'marks': json.dumps(marks.aud_dict),
-                     'result': result}
-                )
-                await manager.broadcast(message)
-        except WebSocketDisconnect:
-            manager.disconnect(websocket=websocket, user_id=client_id)
+            message = json.dumps(
+                {'client_id': client_id,
+                 'data': data,
+                 'active_users': active_user,
+                 'marks': json.dumps(marks.aud_dict),
+                 'result': result}
+            )
+            await manager.broadcast(message)
+    except WebSocketDisconnect:
+        manager.disconnect(websocket=websocket, user_id=client_id)
+
 
 
