@@ -585,7 +585,7 @@
         let d_mark = {100: '5+', 85: '5', 70: '5-', 60: '4+', 50: '4', 40: '4-', 30: '3+', 25: '3', 20: '3-', 0: '0'}
         let user_id = Number(document.getElementById("user_id").innerHTML);
         console.log(auditory, action, user_id);
-        let ws = new WebSocket(`wss://tournofbio.onrender.com/auditory/ws/${auditory}/${action}/${user_id}`);
+        let ws = new WebSocket(`wss://tournofbio.onrender.com/auditory/ws/${auditory}/${action}/`);
 
         ws.onmessage = function(event) {
             let elem;

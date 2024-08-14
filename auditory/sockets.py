@@ -7,6 +7,7 @@ from sqlalchemy import insert, select, delete, update
 from database import get_async_session
 from rating.routers import update_marks, get_marks
 from auth.models import role, user
+from security.secr import get_current_user_from_cookie
 
 router = APIRouter(
     prefix="/auditory",
@@ -112,10 +113,11 @@ managers = Managers()
 marks = Marks()
 
 
-@router.websocket("/ws/{auditory}/{action}/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, auditory: str, action: int, client_id: int,
-                             session: AsyncSession = Depends(get_async_session)):
-
+@router.websocket("/ws/{auditory}/{action}/")
+async def websocket_endpoint(websocket: WebSocket, auditory: str, action: int,
+                             session: AsyncSession = Depends(get_async_session),
+                             cookie_user=Depends(get_current_user_from_cookie)):
+    client_id = cookie_user['id']
     manager = managers.active_managers[(auditory, action)]
     new_marks = await get_marks(auditory=auditory, action=str(action), session=session)
     if new_marks is not None:
