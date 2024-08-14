@@ -44,7 +44,8 @@ async def logout():
 
 @router.post('/signup')
 async def signup(
-        email: EmailStr = Form(max_length=128),
+        # email: EmailStr = Form(max_length=128),
+        email: str = Form(max_length=128),
         password: str = Form(max_length=128, min_length=6),
         session: AsyncSession = Depends(get_async_session)
 ):
