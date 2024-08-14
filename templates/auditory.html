@@ -586,10 +586,7 @@
         let user_id = Number(document.getElementById("user_id").innerHTML);
         console.log(auditory, action, user_id);
         let ws = new WebSocket(`wss://tournofbio.onrender.com/auditory/ws/${auditory}/${action}/${user_id}`);
-        ws.onerror = function(e) {
-            console.log(e.code);
-            console.log(e.reason);
-        };
+
         ws.onmessage = function(event) {
             let elem;
             let content = JSON.parse(event.data)
@@ -616,6 +613,11 @@
                     }
                 }
             }
+
+        ws.onerror = function(e) {
+            console.log(e.code);
+            console.log(e.reason);
+        };
 
             let result = JSON.parse(content['result']);
             let mark;
