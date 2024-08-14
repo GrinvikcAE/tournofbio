@@ -78,34 +78,6 @@ async def get_user(
                                               'closest_aud': closest_aud
                                           }
                                           )
-    # elif cookie_user['role_id'] in (3, 4):
-    #     aud_list = await get_auditory(session=session)
-    #     personal_aud = []
-    #     closest_aud = aud_list[0] if len(aud_list) != 0 else {'number_of_auditory': '---',
-    #                                                           'number_of_action': '---'}
-    #
-    #     for aud in aud_list:
-    #         if cookie_user['id'] == aud['master'] or cookie_user['id'] in aud['jury']['jury']:
-    #             personal_aud.append(aud)
-    #     if len(personal_aud) != 0:
-    #         for aud in personal_aud:
-    #             if not aud['is_complete']:
-    #                 closest_aud = aud
-    #                 break
-    #
-    #     return templates.TemplateResponse('master.html',
-    #                                       {
-    #                                           'request': request,
-    #                                           'cookie_user': cookie_user,
-    #                                           'aud_list': personal_aud,
-    #                                           'closest_aud': closest_aud
-    #                                       }
-    #                                       )
-
-    # if cookie_user['role_id'] == 5:
-    #     return await get_command(command_name=cookie_user['commands_name'][0]['commands'][0], request=request)
-    # else:
-    #     return templates.TemplateResponse('user.html', {'request': request, 'cookie_user': cookie_user})
 
 
 # @router.api_route('/{user}/{command_name}', response_class=HTMLResponse, methods=["GET", "POST"])

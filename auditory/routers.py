@@ -9,14 +9,6 @@ from security.secr import get_admin_status_from_cookie, get_current_user_from_co
 from sqlalchemy import insert, select, delete, update, and_
 from auditory.models import auditory
 
-# Column('id', Integer, primary_key=True, index=True),
-# Column('number_of_action', Integer),
-# Column('number_of_auditory', String),  # Possible in Assembly Hall
-# Column('command', JSON),
-# Column('master', Integer, ForeignKey(user.c.id)),
-# Column('jury', JSON),
-# Column('is_complete', Boolean, default=False)
-
 
 router = APIRouter(
     prefix='/auditory',

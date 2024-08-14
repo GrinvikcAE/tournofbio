@@ -8,7 +8,7 @@ services:
       - .env-dev
     container_name: tournofbio_app
     ports:
-      - "10000:10000"
+      - "8000:8000"
     depends_on:
       - db
 
