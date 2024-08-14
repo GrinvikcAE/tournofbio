@@ -113,7 +113,7 @@ managers = Managers()
 marks = Marks()
 
 
-@router.websocket("/ws")
+@router.websocket("")
 async def websocket_endpoint(websocket: WebSocket, auditory: str = '1', action: int = 1,
                              session: AsyncSession = Depends(get_async_session),
                              cookie_user=Depends(get_current_user_from_cookie)):
