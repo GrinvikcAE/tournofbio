@@ -18,11 +18,11 @@ from rating.routers import update_marks, get_marks
 from auth.models import role, user
 from security.secr import get_current_user_from_cookie
 
-router = APIRouter(prefix='/root', tags=['Pages'])
+router = APIRouter(prefix='', tags=['Pages'])
 templates = Jinja2Templates(directory='templates')
 
 
-@router.api_route('', response_class=HTMLResponse, status_code=200, methods=["GET", "POST"])
+@router.api_route('/', response_class=HTMLResponse, status_code=200, methods=["GET", "POST"])
 async def get_root_page(
         request: Request,
         cookie_user=Depends(get_current_user_from_cookie),
