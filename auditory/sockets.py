@@ -124,7 +124,9 @@ async def websocket_endpoint(websocket: WebSocket, auditory: str, action: int, c
 
     marks.add_auditory(auditory=auditory, action=str(action))
     marks.add_jury(auditory=auditory, action=str(action), jury=str(client_id))
+    print(websocket, auditory, action, client_id)
     await manager.connect(websocket=websocket, user_id=client_id)
+    print('connected')
 
     active_user = [ws['user_id'] for ws in manager.active_connections]
     result = json.dumps(marks.get_results(auditory=auditory, action=str(action)))
