@@ -157,13 +157,13 @@ async def add_on_startup():
              'is_superuser': False, 'role_id': 5},
 
         ]
-        for usr in users:
-            async with engine.begin() as conn:
-                try:
-                    await conn.execute(user.insert(), [usr])
-                except Exception as e:
-                    print(e)
-            await engine.dispose()
+
+        async with engine.begin() as conn:
+            try:
+                await conn.execute(user.insert(), users)
+            except Exception as e:
+                print(e)
+        await engine.dispose()
     except Exception as e:
         print(e)
 
